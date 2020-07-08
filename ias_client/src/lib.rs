@@ -217,6 +217,8 @@ fn validate_quote_signature(
         return Err(QuoteVerificationError::InvalidCertificates(pem_certificates.to_string()));
     }
 
+    warn!("FIXME got here");
+
     // TODO(KBS-174): remove this logging or make it a return, not a log
     if certificates.len() != 2 {
         warn!(
