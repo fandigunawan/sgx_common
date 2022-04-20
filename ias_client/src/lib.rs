@@ -99,7 +99,7 @@ where
         }
 
         let response = self.client.request(hyper_request);
-        println!("URI: {}", uri)
+        println!("URI: {}", uri);
         println!("Response: {}", response.status());
         println!("Headers: {:#?}\n", response.headers());
         println!("Dump data:")
@@ -142,7 +142,7 @@ where
 
         let response = self.client.request(hyper_request);
 
-        println!("URI: {}", uri)
+        println!("URI: {}", uri);
         println!("Response: {}", response.status());
         println!("Headers: {:#?}\n", response.headers());
         println!("Dump data:")
