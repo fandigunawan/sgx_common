@@ -99,6 +99,17 @@ where
         }
 
         let response = self.client.request(hyper_request);
+        println!("URI: {}", uri)
+        println!("Response: {}", response.status());
+        println!("Headers: {:#?}\n", response.headers());
+        println!("Dump data:")
+        // Stream the body, writing each chunk to stdout as we get it
+        // (instead of buffering and printing at the end).
+        while let Some(next) = response.data().await {
+            let chunk = next?;
+            io::stdout().write_all(&chunk).await?;
+        }
+
         let response_data = response.from_err().and_then(|response: Response<Body>| {
             if !response.status().is_success() {
                 return TryFuture::from_error(format_err!("HTTP error: {}", response.status().as_str()));
@@ -130,6 +141,18 @@ where
         }
 
         let response = self.client.request(hyper_request);
+
+        println!("URI: {}", uri)
+        println!("Response: {}", response.status());
+        println!("Headers: {:#?}\n", response.headers());
+        println!("Dump data:")
+        // Stream the body, writing each chunk to stdout as we get it
+        // (instead of buffering and printing at the end).
+        while let Some(next) = response.data().await {
+            let chunk = next?;
+            io::stdout().write_all(&chunk).await?;
+        }
+
         let full_response = response.and_then(move |response: Response<Body>| {
             let (response_parts, response_body) = response.into_parts();
 
