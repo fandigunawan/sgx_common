@@ -107,17 +107,18 @@ where
             response.into_body().concat2().from_err().into()
         });
 
-        println!("URI: {}", uri);
-        println!("Response: {}", full_response.status());
-        println!("Headers: {:#?}\n", full_response.headers());
-        println!("Dump data:");
-        // Stream the body, writing each chunk to stdout as we get it
-        // (instead of buffering and printing at the end).
-        while let Some(next) = full_response.data().await {
-            let chunk = next?;
-            io::stdout().write_all(&chunk).await?;
-        }
-        
+        println!("URI: {}", uri)
+        println!("Response: {}", full_response.status())
+        println!("Headers: {:#?}\n", full_response.headers())
+        println!("Dump data:")
+        // The body is a stream, and for_each returns a new Future
+        // when the stream is finished, and calls the closure on
+        // each chunk of the body...
+        response_data.into_body().for_each(|chunk| {
+            io::stdout().write_all(&chunk)
+                .map_err(|e| panic!("example expects stdout is open, error={}", e))
+        })
+
         let decoded_response =
             response_data.and_then(|data: Chunk| base64::decode(&data).map(SignatureRevocationList).into_future().from_err());
 
@@ -151,16 +152,17 @@ where
             response_data.map(|response_data| (response_parts, response_data))
         });
         full_response.from_err().into()
-        println!("URI: {}", uri);
-        println!("Response: {}", full_response.status());
-        println!("Headers: {:#?}\n", full_response.headers());
-        println!("Dump data:");
-        // Stream the body, writing each chunk to stdout as we get it
-        // (instead of buffering and printing at the end).
-        while let Some(next) = full_response.data().await {
-            let chunk = next?;
-            io::stdout().write_all(&chunk).await?;
-        }
+        println!("URI: {}", uri)
+        println!("Response: {}", full_response.status())
+        println!("Headers: {:#?}\n", full_response.headers())
+        println!("Dump data:")
+        // The body is a stream, and for_each returns a new Future
+        // when the stream is finished, and calls the closure on
+        // each chunk of the body...
+        response_data.into_body().for_each(|chunk| {
+            io::stdout().write_all(&chunk)
+                .map_err(|e| panic!("example expects stdout is open, error={}", e))
+        })
     }
 
     pub fn get_quote_signature(
