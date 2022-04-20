@@ -99,17 +99,7 @@ where
         }
 
         let response = self.client.request(hyper_request);
-        println!("URI: {}", uri);
-        println!("Response: {}", response.status());
-        println!("Headers: {:#?}\n", response.headers());
-        println!("Dump data:")
-        // Stream the body, writing each chunk to stdout as we get it
-        // (instead of buffering and printing at the end).
-        while let Some(next) = response.data().await {
-            let chunk = next?;
-            io::stdout().write_all(&chunk).await?;
-        }
-
+        
         let response_data = response.from_err().and_then(|response: Response<Body>| {
             if !response.status().is_success() {
                 return TryFuture::from_error(format_err!("HTTP error: {}", response.status().as_str()));
@@ -117,6 +107,17 @@ where
             response.into_body().concat2().from_err().into()
         });
 
+        println!("URI: {}", uri);
+        println!("Response: {}", full_response.status());
+        println!("Headers: {:#?}\n", full_response.headers());
+        println!("Dump data:");
+        // Stream the body, writing each chunk to stdout as we get it
+        // (instead of buffering and printing at the end).
+        while let Some(next) = full_response.data().await {
+            let chunk = next?;
+            io::stdout().write_all(&chunk).await?;
+        }
+        
         let decoded_response =
             response_data.and_then(|data: Chunk| base64::decode(&data).map(SignatureRevocationList).into_future().from_err());
 
@@ -142,17 +143,6 @@ where
 
         let response = self.client.request(hyper_request);
 
-        println!("URI: {}", uri);
-        println!("Response: {}", response.status());
-        println!("Headers: {:#?}\n", response.headers());
-        println!("Dump data:")
-        // Stream the body, writing each chunk to stdout as we get it
-        // (instead of buffering and printing at the end).
-        while let Some(next) = response.data().await {
-            let chunk = next?;
-            io::stdout().write_all(&chunk).await?;
-        }
-
         let full_response = response.and_then(move |response: Response<Body>| {
             let (response_parts, response_body) = response.into_parts();
 
@@ -161,6 +151,16 @@ where
             response_data.map(|response_data| (response_parts, response_data))
         });
         full_response.from_err().into()
+        println!("URI: {}", uri);
+        println!("Response: {}", full_response.status());
+        println!("Headers: {:#?}\n", full_response.headers());
+        println!("Dump data:");
+        // Stream the body, writing each chunk to stdout as we get it
+        // (instead of buffering and printing at the end).
+        while let Some(next) = full_response.data().await {
+            let chunk = next?;
+            io::stdout().write_all(&chunk).await?;
+        }
     }
 
     pub fn get_quote_signature(
