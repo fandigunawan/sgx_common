@@ -98,6 +98,9 @@ where
             hyper_request.headers_mut().insert("Ocp-Apim-Subscription-Key", api_key.clone());
         }
 
+        println!("URI: {}", uri)
+        println!("API Key Ocp-Apim-Subscription-Key: {}", api_key)
+        
         let response = self.client.request(hyper_request);
         
         let response_data = response.from_err().and_then(|response: Response<Body>| {
@@ -106,18 +109,6 @@ where
             }
             response.into_body().concat2().from_err().into()
         });
-
-        println!("URI: {}", uri)
-        println!("Response: {}", full_response.status())
-        println!("Headers: {:#?}\n", full_response.headers())
-        println!("Dump data:")
-        // The body is a stream, and for_each returns a new Future
-        // when the stream is finished, and calls the closure on
-        // each chunk of the body...
-        response_data.into_body().for_each(|chunk| {
-            io::stdout().write_all(&chunk)
-                .map_err(|e| panic!("example expects stdout is open, error={}", e))
-        })
 
         let decoded_response =
             response_data.and_then(|data: Chunk| base64::decode(&data).map(SignatureRevocationList).into_future().from_err());
@@ -141,7 +132,8 @@ where
         if let Some(api_key) = &self.api_key {
             hyper_request.headers_mut().insert("Ocp-Apim-Subscription-Key", api_key.clone());
         }
-
+        println!("URI: {}", uri)
+        println!("API Key Ocp-Apim-Subscription-Key: {}", api_key)
         let response = self.client.request(hyper_request);
 
         let full_response = response.and_then(move |response: Response<Body>| {
@@ -152,17 +144,7 @@ where
             response_data.map(|response_data| (response_parts, response_data))
         });
         full_response.from_err().into()
-        println!("URI: {}", uri)
-        println!("Response: {}", full_response.status())
-        println!("Headers: {:#?}\n", full_response.headers())
-        println!("Dump data:")
-        // The body is a stream, and for_each returns a new Future
-        // when the stream is finished, and calls the closure on
-        // each chunk of the body...
-        response_data.into_body().for_each(|chunk| {
-            io::stdout().write_all(&chunk)
-                .map_err(|e| panic!("example expects stdout is open, error={}", e))
-        })
+        
     }
 
     pub fn get_quote_signature(
