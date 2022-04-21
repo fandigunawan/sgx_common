@@ -92,7 +92,7 @@ where
         let mut hyper_request = Request::new(Body::empty());
 
         *hyper_request.method_mut() = Method::GET;
-        *hyper_request.uri_mut() = uri;
+        *hyper_request.uri_mut() = uri.clone();
 
         if let Some(api_key) = &self.api_key {
             hyper_request.headers_mut().insert("Ocp-Apim-Subscription-Key", api_key.clone());
@@ -124,7 +124,7 @@ where
         let mut hyper_request = Request::new(Body::from(encoded_request));
 
         *hyper_request.method_mut() = Method::POST;
-        *hyper_request.uri_mut() = uri;
+        *hyper_request.uri_mut() = uri.clone();
         hyper_request
             .headers_mut()
             .insert("Content-Type", HeaderValue::from_static("application/json"));
