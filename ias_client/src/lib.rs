@@ -122,7 +122,7 @@ where
 
         let request = QuoteSignatureRequest { isvEnclaveQuote: quote };
         let encoded_request = try_future!(serde_json::to_vec(&request));
-        let mut hyper_request = Request::new(Body::from(encoded_request));
+        let mut hyper_request = Request::new(Body::from(encoded_request.clone()));
 
         *hyper_request.method_mut() = Method::POST;
         *hyper_request.uri_mut() = uri.clone();
