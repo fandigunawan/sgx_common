@@ -135,7 +135,7 @@ where
         }
         println!("URI: {}", uri.clone());
         println!("API Key Ocp-Apim-Subscription-Key: {:?}", self.api_key.clone());
-        println!("Content post application/json: {:?}", encoded_request.clone())
+        println!("Content post application/json: {:?}", encoded_request.clone());
         let response = self.client.request(hyper_request);
 
         let full_response = response.and_then(move |response: Response<Body>| {
