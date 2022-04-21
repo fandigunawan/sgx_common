@@ -99,7 +99,7 @@ where
         }
 
         println!("URI: {}", uri);
-        println!("API Key Ocp-Apim-Subscription-Key: {}", api_key);
+        println!("API Key Ocp-Apim-Subscription-Key: {}", self.api_key);
 
         let response = self.client.request(hyper_request);
         
@@ -133,7 +133,7 @@ where
             hyper_request.headers_mut().insert("Ocp-Apim-Subscription-Key", api_key.clone());
         }
         println!("URI: {}", uri);
-        println!("API Key Ocp-Apim-Subscription-Key: {}", api_key);
+        println!("API Key Ocp-Apim-Subscription-Key: {}", self.api_key);
         let response = self.client.request(hyper_request);
 
         let full_response = response.and_then(move |response: Response<Body>| {
